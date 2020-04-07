@@ -11,6 +11,7 @@ public class World {
 
 	private int width, height;
 	private Color canavasColor;
+	// Holds all the predator objects in the world object
 	ArrayList<predator> predList = new ArrayList<predator>();
 	Animal [][] worldMap;
 	DotPanel dp;
@@ -57,9 +58,15 @@ public class World {
 	 */
 	public void update() {
 		// Move predators, prey, etc
-		for(predator p: predList){
+		/*for(predator p: predList){
 			p.move();
 			p.changeDirection();
+		}*/
+		for(int i = 0; i< predList.size();i++){
+			predList.get(i).move();
+			predList.get(i).changeDirection();
+			predList.get(i).reproduce();
+			predList.get(i).die();
 		}
 	}
 
@@ -70,9 +77,15 @@ public class World {
 		/* Clear the screen */
 		PPSim.dp.clear(canavasColor);
 		// Draw predators and pray
-		for(predator p:predList){
+		/*for(predator p:predList){
 			p.drawPred(canvas);
+		}*/
+
+		for(int i = 0; i< predList.size();i++){
+			predList.get(i).drawPred(canvas);
 		}
+
+
 	}
 	//public void addPrey()?
 	//public void addPred()?
@@ -144,7 +157,6 @@ public class World {
 					this.x_point++;
 					break;
 			}
-			
 		}
 		@Override
 		public void changeDirection(){
@@ -154,11 +166,21 @@ public class World {
 		}
 		@Override
 		public void reproduce(){
-
+			if(Helper.nextDouble() < 0.01){
+				int i = 0;
+				int max = Helper.nextInt(4);
+				while (i < max){
+					predator pred = new predator(Helper.nextInt(width), Helper.nextInt(height));
+					predList.add(pred);
+					i++;
+				}
+			}
 		}
 		@Override
 		public void die(){
-
+			if(Helper.nextDouble() < 0.01305){
+				predList.remove(this);
+			}
 		}
 
 		public void drawPred(DotPanel dotPanel){
