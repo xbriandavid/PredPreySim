@@ -79,7 +79,7 @@ public class PPSim extends JFrame {
 			// Run update rules for world and everything in it
 			ppworld.update();
 			// Draw to screen and then refresh
-			ppworld.draw();
+			ppworld.draw(dp);
 			dp.repaintAndSleep(30);
 
 		}
