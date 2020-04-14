@@ -88,9 +88,9 @@ public class World {
 			predList.get(i).die();
 		}
 
-		// After a predator moves, it will eat eat any adjacent prey
+		// After a predator moves, it will eat any adjacent prey
 		for(int i = 0; i < predList.size(); i++){
-			eat(predList.get(i).y_point, predList.get(i).x_point); // (y,x) is its location in the 2D array
+			predsEat(predList.get(i).y_point, predList.get(i).x_point); // (y,x) is its location in the 2D array
 		}
 		
 		// Each prey has a chance to move, reproduce, or die
@@ -102,7 +102,7 @@ public class World {
 
 		// After each prey moves, predators get a second opportunity to eat prey that moved
 		for(int i = 0; i < predList.size(); i++){
-			eat(predList.get(i).y_point, predList.get(i).x_point);
+			predsEat(predList.get(i).y_point, predList.get(i).x_point);
 		}
 
 		// Each predator scans 15 squares left,right,top,below it to see if there's any
@@ -341,21 +341,34 @@ public class World {
 		return false;
 	}
 
+	/**
+	 * checks whether there is a prey nearby for a predator object located by worldMap[i][j]
+	 * The spectator is the "pred" who is checking for "prey" (the observe)
+	 * @param x position x in the 2D array (an animal's y coordinate in the screen)
+	 * @param y position y in the 2D array (an animal's x coordinate in the screen)
+	 */
 	public void predScanAround(int i , int j){
-		if(worldMap[i][j] != null && worldMap[i][j].type == "pred"){	
-			worldMap[i][j].chasing = false;
+		// checking that the object is type "pred" 
+		if(worldMap[i][j] != null && worldMap[i][j].type == "pred"){
+			// set predator's chasing attribute to false if no prey is 
+			// located  in either 4 directions	
+			worldMap[i][j].chasing = false; 
+			// if there are any prey within 15 squares right of the predator
 			if(SquaresRight(i, j, 15, "pred", "prey")){
 				worldMap[i][j].moveDirection = 3;
 				worldMap[i][j].chasing = true;
 			}
+			// if there are any prey within 15 squares left of the predator
 			if(SquaresLeft(i, j, 15, "pred", "prey")){
 				worldMap[i][j].moveDirection = 2;
 				worldMap[i][j].chasing = true;
 			}
+			// if there are any prey within 15 squares above the predator
 			if(SquaresUp(i, j, 15, "pred", "prey")){
 				worldMap[i][j].moveDirection = 0;
 				worldMap[i][j].chasing = true;
 			}
+			// if there are any prey within 15 squares below the predator
 			if(SquaresDown(i, j, 15, "pred", "prey")){
 				worldMap[i][j].moveDirection = 1;
 				worldMap[i][j].chasing = true;
@@ -363,56 +376,83 @@ public class World {
 		}
 	}
 
-
+	/**
+	 * checks whether there is a predator nearby for a prey object located by worldMap[i][j]
+	 * The spectator is the "prey" who is checking for "pred" (the observe)
+	 * @param x position x in the 2D array (an animal's y coordinate in the screen)
+	 * @param y position y in the 2D array (an animal's x coordinate in the screen)
+	 */
 	public void preyScanAround(int i, int j){
+		// checking that the object is type "prey" 
 		if(worldMap[i][j] != null && worldMap[i][j].type =="prey"){
+			// set prey's chasing attribute to false if no predator is 
+			// located  in either 4 directions
 			worldMap[i][j].chasing = false;
+			// if there are any predators within 10 squares right of the predator
 			if(SquaresRight(i, j, 10, "prey", "pred")){
-				worldMap[i][j].moveDirection = 2;
-				if(j > 0 && worldMap[i][j].type == "prey"){
+				worldMap[i][j].moveDirection = 2; //move left
+				// make sure it's not by left border
+				if(j > 0 && worldMap[i][j].type == "prey"){ 
+					// move additional step 
 					worldMap[i][j].move();
 				}
 			}
+			// if there are any predators within 10 squares left of the predator
 			if(SquaresLeft(i, j, 10, "prey", "pred")){
-				worldMap[i][j].moveDirection = 3;
+				worldMap[i][j].moveDirection = 3; //move right
+				// make sure it's not by the right border
 				if(j < width-1 && worldMap[i][j].type == "prey"){
+					// move additional step
 					worldMap[i][j].move();
 				}
 			}
+			// if there are any predators within 10 squares above of the predator
 			if(SquaresUp(i, j, 10, "prey", "pred")){
-				worldMap[i][j].moveDirection = 1;
+				worldMap[i][j].moveDirection = 1; // move down
+				// make sure it's not by the bottom border
 				if(i < height - 1 && worldMap[i][j].type == "prey"){
+					// move additonal step
 					worldMap[i][j].move();
 				}
 			}
+			// if there are any predators within 10 squares below of the predator
 			if(SquaresDown(i, j, 10, "prey", "pred")){
-				worldMap[i][j].moveDirection = 0;
+				worldMap[i][j].moveDirection = 0; // move up
+				//make sure it's not by the top border
 				if(i > 0 && worldMap[i][j].type == "prey"){
+					// move additional step
 					worldMap[i][j].move();
 				}
 			}
 		}
 	}
 
-	public void OnClick(int x, int y){
-		predator onClickedPred = new predator(x, y);
-		worldMap[y][x] = onClickedPred;
-		predList.add(onClickedPred);
-	}
-
-	public void eat(int i , int j){
+	/**
+	 * First checks where the predator is located within the 2D array, in order to properly
+	 * determine which of its adjacent squares should be checked for neighboring prey.
+	 * We do this in case a predator is by the boundary of the world, it can only check
+	 * certain sides versus when it's completely in the middle to prevent out-of-bounds errors.
+	 * @param x position x in the 2D array (the clicked y coordinate in the screen)
+	 * @param y position y in the 2D array (the clicked x coordinate in the screen)
+	 */
+	public void predsEat(int i , int j){
+		// check that at position i,j, there is an animal of type "pred"
 		if(worldMap[i][j] != null && worldMap[i][j].type =="pred")
+		// if predator is on the top-most border of the world
 		if(i == 0){		
+			// if at the top-left corner
 			if(j == 0){
 				//look down, right
 				adjacent(i, j, "down");		
 				adjacent(i, j, "right");
-			}		
+			}
+			// if at the top-right corner		
 			else if(j == width-1){
 				//look left, down
 				adjacent(i, j, "left");
 				adjacent(i, j, "down");
 			}
+			// somewhere between the two corners (but still in top-border)
 			else{
 				//look left down right
 				adjacent(i, j, "left");
@@ -420,11 +460,14 @@ public class World {
 				adjacent(i, j, "right");
 			}
 		}
+		// if predator is on the left-most border of the world
 		else if (j == 0){
+			// if at bottom-left corner
 			if(i == height - 1){
 				//look up, right
 				adjacent(i, j, "right");
 			}
+			// somewhere along the left border
 			else{
 				//look up, right, down
 				adjacent(i, j, "up");
@@ -432,12 +475,15 @@ public class World {
 				adjacent(i, j, "down");
 			}
 		}
+		// if predator is at the bottom border
 		else if(i == height - 1){
+			// if at bottom-right corner
 			if(j == width - 1){
 				//look up, left
 				adjacent(i, j, "left");
 				adjacent(i, j, "up");
 			}
+			// if somewhere along the bottom border
 			else{
 				//look left, right, up
 				adjacent(i, j, "left");
@@ -445,14 +491,16 @@ public class World {
 				adjacent(i, j, "up");
 			}
 		}
+		// if somewhere along the right-most border
 		else if(j == width -1){
 			// look up, down, left
 			adjacent(i, j, "up");
 			adjacent(i, j, "down");
 			adjacent(i, j, "left");
 		}
+		// if predator is NOT constrained any border and corner
 		else{
-			// look all 4
+			// look at all 4 directions
 			adjacent(i, j, "up");
 			adjacent(i, j, "down");
 			adjacent(i, j, "left");
@@ -460,45 +508,92 @@ public class World {
 		}	
 		
 	}
-	
+
+	/**
+	 * Predator eats the prey at the adjacent square if they exist
+	 * @param x position x in the 2D array (the clicked y coordinate in the screen)
+	 * @param y position y in the 2D array (the clicked x coordinate in the screen)
+	 * @param direction which of the adjacent squares to check that a prey is present 
+	 */
 	public void adjacent(int x, int y, String direction){
+		// if we want to check the right-adjacent square
 		if(direction == "right" && worldMap[x][y] != null){
+			// ensure that the right square next to the predator is not null
 			if(worldMap[x][y].type == "pred" && worldMap[x][y + 1] != null){
+				// if the square right to the predator is a prey and does not have the
+				// same color as the screen background, eat it
 				if(worldMap[x][y + 1].type == "prey" && worldMap[x][y + 1].color != canavasColor){
 					((prey)worldMap[x][y + 1]).getEaten();
 				}
 			}
 		}
+		// if we want to check the left-adjacent square
 		if(direction == "left" && worldMap[x][y] != null){
+			// ensure that the left square next to the predator is not null
 			if(worldMap[x][y].type == "pred" && worldMap[x][y - 1] != null){
+				// if the square left to the predator is a prey and does not have the
+				// same color as the screen background, eat it
 				if(worldMap[x][y - 1].type == "prey" && worldMap[x][y - 1].color != canavasColor){
 					((prey)worldMap[x][y - 1]).getEaten();
 				}
 			}
 		}
-
+		// if we want to check the bottom-adjacent square
 		if(direction == "down" && worldMap[x][y] != null){
+			// ensure that the square below the predator is not null
 			if(worldMap[x][y].type == "pred" && worldMap[x+1][y] != null){
+				// if the square below the predator is a prey and does not have the
+				// same color as the screen background, eat it
 				if(worldMap[x + 1][y].type == "prey" && worldMap[x + 1][y].color != canavasColor){
 					((prey)worldMap[x + 1][y]).getEaten();
 				}
 			}
 		}
-
+		// if we want to check the top-adjacent square
 		if(direction == "up" && worldMap[x][y] != null){
+			// ensure that the square above the predator is not null
 			if(worldMap[x][y].type == "pred" && worldMap[x - 1][y] != null){
+				// if the square above the predator is a prey and does not have the
+				// same color as the screen background, eat it
 				if(worldMap[x - 1][y].type == "prey" && direction == "up" && worldMap[x - 1][y].color != canavasColor){
 					((prey)worldMap[x - 1][y]).getEaten();
 				}
 			}
 		}
 	}
+
+	/**
+	 * creates a new predator object and puts it in predList and in worldMap
+	 * based on where the user clicks on the screen
+	 * @param x position x in the 2D array (the clicked y coordinate in the screen)
+	 * @param y position y in the 2D array (the clicked x coordinate in the screen)
+	 */
+	public void OnClickPrey(int x, int y){
+		prey onClickedPrey = new prey(x, y, Helper.newRandColor());
+		worldMap[y][x] = onClickedPrey;
+		preyList.add(onClickedPrey);
+	}
+
+	/**
+	 * creates a new prey object and puts it in preyList and in worldMap
+	 * whenever the user presses "p" on the keyboard
+	 */
+	public void onPressedPred(){
+		int x = Helper.nextInt(width);
+		int y = Helper.nextInt(height);
+		predator pred = new predator(x, y); // each prey has a random color
+		worldMap[y][x] = pred; 
+		predList.add(pred);
+	}
+
 	// Animal Class 
 	abstract class Animal{
 		// coordinate points of each animal object
         int x_point; 
 		int y_point;
+		// direction to move
 		int moveDirection;
+		// either "pred" or "prey"
 		String type;
 		Color color;
 		boolean chasing;
@@ -506,7 +601,6 @@ public class World {
             this.x_point = x_point;
             this.y_point = y_point;
 		}
-
 		// Methods in this class
 		public abstract void move();
 		public abstract void changeDirection();
@@ -521,14 +615,12 @@ public class World {
 
 		// predators created are placed in random coordinates
 		// and are randomly assigned a direction to walk to
-		
-
 		public predator (int x_point, int y_point){
             super(x_point, y_point);
 			this.moveDirection = Helper.nextInt(4);
 			this.type = "pred";
 			this.color = Color.RED;
-			this.chasing = false;
+			this.chasing = false; 
 		}
 
 		@Override
@@ -538,14 +630,14 @@ public class World {
 			if(this.x_point == width - 1){ // if at rightmost 
 				this.moveDirection = 2; // make predator move left
 			}
-			if(this.y_point == height - 1){ // if at very top 
-				this.moveDirection = 0; // make predator go down
+			if(this.y_point == height - 1){ // if at very bottom
+				this.moveDirection = 0; // make predator go up
 			}
 			if(this.x_point == 0){ // if at very leftmost
 				this.moveDirection = 3; // make predator go right
 			}
-			if(this.y_point == 0){ // if at very bottom
-				this.moveDirection = 1; // make predator go up
+			if(this.y_point == 0){ // if at very top
+				this.moveDirection = 1; // make predator go down
 			}
 			worldMap[this.y_point][this.x_point] = null;
 			// Allow predator to continue moving one square
@@ -576,6 +668,7 @@ public class World {
 
 		@Override
 		public void changeDirection(){
+			// if predator is not chasing a prey
 			if (!this.chasing){
 				if(Helper.nextDouble() < 0.05){
 					// randomly select a new direction 
@@ -606,7 +699,7 @@ public class World {
 		@Override
 		public void die(){
 			if(Helper.nextDouble() < 0.011){
-				worldMap[this.y_point][this.x_point] = null;
+				worldMap[this.y_point][this.x_point] = null; // set its current location null
 				predList.remove(this); // remove the object from predList if it dies
 			}
 		}
@@ -619,32 +712,31 @@ public class World {
 			
 	}
 
-		// prey class
+	// prey class
 	class prey extends Animal{
 
-			//boolean chasing = false;
-			public prey (int x_point, int y_point, Color c){
-				super(x_point, y_point);
-				this.moveDirection = Helper.nextInt(4);
-				this.type = "prey";
-				this.color = c;
-				this.chasing = false;
-			}
+		public prey (int x_point, int y_point, Color c){
+			super(x_point, y_point);
+			this.moveDirection = Helper.nextInt(4);
+			this.type = "prey";
+			this.color = c;
+			this.chasing = false;
+		}
 
-			@Override
-			public void move(){
-				// Ensures that a predator is within the bounds of the world
+		@Override
+		public void move(){
+			// Ensures that a predator is within the bounds of the world
 			if(this.x_point == width - 1){ // if at rightmost 
 				this.moveDirection = 2; // make predator move left
 			}
-			if(this.y_point == height - 1){ // if at very top 
-				this.moveDirection = 0; // make predator go down
+			if(this.y_point == height - 1){ // if at very bottom 
+				this.moveDirection = 0; // make predator go up
 			}
 			if(this.x_point == 0){ // if at very leftmost
 				this.moveDirection = 3; // make predator go right
 			}
-			if(this.y_point == 0){ // if at very bottom
-				this.moveDirection = 1; // make predator go up
+			if(this.y_point == 0){ // if at very top
+				this.moveDirection = 1; // make predator go down
 			}
 
 			worldMap[this.y_point][this.x_point] = null;
@@ -672,54 +764,57 @@ public class World {
 					worldMap[this.y_point][this.x_point] = this;
 					break;
 				}
-			}
+		}
 
-			@Override
-			public void changeDirection(){
-				if(!this.chasing){
-					if(Helper.nextDouble() < 0.05){
-						// randomly select a new direction 
-						this.moveDirection = Helper.nextInt(4);
-					}
+		@Override
+		public void changeDirection(){
+			// if a predator is not located nearby
+			if(!this.chasing){
+				if(Helper.nextDouble() < 0.1){
+					// randomly select a new direction 
+					this.moveDirection = Helper.nextInt(4);
 				}
-			}
-
-			@Override
-			public void reproduce(){
-					if(Helper.nextDouble() < 0.03){
-					int x = Helper.nextInt(width);
-					int y = Helper.nextInt(height);
-					Color offSpringColor;
-
-					if (Helper.nextDouble() < 0.1){
-						offSpringColor = Helper.newRandColor();
-					}
-					else{
-						offSpringColor = this.color;
-					}
-
-					prey offspring = new prey(x,y, offSpringColor);
-					worldMap[y][x] = offspring;
-					preyList.add(offspring);
-				}
-			}
-
-			@Override
-			public void die(){
-				if(Helper.nextDouble() < 0.0135){
-					worldMap[this.y_point][this.x_point] = null;
-					preyList.remove(this); // remove the object from preyList if it dies
-				}
-			}
-			public void getEaten(){
-				worldMap[this.y_point][this.x_point] = null;
-				preyList.remove(this); 
-			}
-
-			@Override
-			public void drawAnimal(DotPanel dotPanel){
-				dotPanel.drawCircle(this.x_point, this.y_point, this.color);
 			}
 		}
 
+		@Override
+		public void reproduce(){
+			if(Helper.nextDouble() < 0.03){
+				int x = Helper.nextInt(width);
+				int y = Helper.nextInt(height);
+				Color offSpringColor;
+				// chance for the offspring to have a new color
+				if (Helper.nextDouble() < 0.1){
+					offSpringColor = Helper.newRandColor();
+				}
+				else{
+					// otherwhise, it will have the same color as the parent
+					offSpringColor = this.color;
+				}
+				prey offspring = new prey(x,y, offSpringColor);
+				worldMap[y][x] = offspring;
+				preyList.add(offspring);
+			}
+		}
+
+		@Override
+		public void die(){
+			if(Helper.nextDouble() < 0.0135){
+				worldMap[this.y_point][this.x_point] = null;
+				preyList.remove(this); // remove the object from preyList if it dies
+				}
+		}
+
+		@Override
+		public void drawAnimal(DotPanel dotPanel){
+			dotPanel.drawCircle(this.x_point, this.y_point, this.color);
+		}
+
+		// called when a predator object is located adjacent to
+		// a prey object
+		public void getEaten(){
+			worldMap[this.y_point][this.x_point] = null; // make current position in array null
+			preyList.remove(this); 
+		}
+	}
 }

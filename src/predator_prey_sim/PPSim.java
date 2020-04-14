@@ -10,6 +10,8 @@ import javax.swing.JFrame;
 import java.awt.event.*;
 
 
+
+
 /*
  * You must add a way to represent predators.  When there is no prey, predators
  * should follow these simple rules:
@@ -62,11 +64,14 @@ public class PPSim extends JFrame implements KeyListener, MouseListener, MouseMo
 		 * You CANNOT draw to the panel BEFORE this code is called.
 		 * You CANNOT add new widgets to the frame AFTER this is called.
 		 */
+
 		this.pack();
 		dp.init();
 		dp.clear();
 		dp.setPenColor(Color.red);
 		this.setVisible(true);
+		
+
 
 		/* Create our city */
 		ppworld = new World(MAX_X, MAX_Y, NUM_PREY, NUM_PREDATORS);
@@ -80,6 +85,7 @@ public class PPSim extends JFrame implements KeyListener, MouseListener, MouseMo
 		 * 33 milliseconds, so the program will update at about 30 frames
 		 * per second.
 		 */
+		
 		while(true)
 		{
 			// Run update rules for world and everything in it
@@ -107,6 +113,9 @@ public class PPSim extends JFrame implements KeyListener, MouseListener, MouseMo
 			case KeyEvent.VK_SPACE:
 				ppworld.canavasColor = Helper.newRandColor();
 				break;
+			case KeyEvent.VK_P:
+				ppworld.onPressedPred();
+				break;
 		}
 
 	}
@@ -117,7 +126,7 @@ public class PPSim extends JFrame implements KeyListener, MouseListener, MouseMo
 
 	@Override
 	public void mouseClicked(MouseEvent mouseEvent) {
-		ppworld.OnClick(mouseEvent.getX()/DOT_SIZE, mouseEvent.getY()/DOT_SIZE);
+		ppworld.OnClickPrey(mouseEvent.getX()/DOT_SIZE, mouseEvent.getY()/DOT_SIZE);
 	}
 
 	@Override
