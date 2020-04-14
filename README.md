@@ -47,9 +47,9 @@ Methods in this class include:
 
 * ```adjacent(int i, int j, String direction)```: checks that a predator object at position i,j in ```worldMap[][]``` is adjacted to a prey object, either 1 square above, below, left, or right of it. If a prey object is adjacent to it, that prey object's ```getEaten()``` method is called on itself, which removes itself from the  ```preyList``` arraylist. ***Additionally it checks whether the adjacent prey's color is the same color as the canvas background***.
 
-* ```OnClickPred(int x, int y)```: a method called from the ```PPSim``` class whenever a user clicks on the canvas/screen. It initializes a new predator, and takes the  ```x``` and ```y``` from wherever the mouse clicks the screen. 
+* ```OnClickPrey(int x, int y)```: a method called from the ```PPSim``` class whenever a user clicks on the canvas/screen. It initializes a new prey object, and takes the  ```x``` and ```y``` coordinates from wherever the mouse clicks the screen. A random color is then assigned to that prey.
 
-* ```onPressedPrey()```: a method called from the ```PPSim``` class whenever a user presses 'p' on the keyboard, which produces a new prey on the screen. **This is also an additional UI feature of the simulation**.
+* ```onPressedPred()```: a method called from the ```PPSim``` class whenever a user presses 'p' on the keyboard, which produces a new predator on the screen. **This is also an additional UI feature of the simulation**.
 
 ***
 
@@ -167,8 +167,8 @@ For click events:
 
 
 ### Additional features:
-Refer to the ```onPressedPrey()``` method found in the ```World``` class. 
+Refer to the ```onPressedPred()``` method found in the ```World``` class. 
 
-Additionally, Prey can die naturally, just like predators
+Additionally, a new rule was implemented such that prey can die naturally, just like predators
 
 Also modified: a prey has a 3% chance of reproducing. 
