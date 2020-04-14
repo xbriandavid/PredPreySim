@@ -167,7 +167,7 @@ For click events:
 
 
 ### Additional features:
-Refer to the ```onPressedPred()``` method found in the ```World``` class. 
+Refer to the ```onPressedPred()``` method found in the ```World``` class. This extra UI feature is added to make predators seem more aggressive such that prey will have a higher chance of being eaten (up to the user of course, but it's honestly more fun when predators eat the prey!)
 
 Additionally, a new rule was implemented such that prey can die naturally, just like predators
 
