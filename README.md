@@ -13,11 +13,15 @@ The  ```World``` Class contains the information of the current state of a simula
 
 Important class variables:
 
+* ```int weight, int height```: dimensions of the world.
+
 * ```ArrayList<predator> predList``` holds all the living predator objects in the world at a given timestep.
 
 * ```ArrayList<prey> preyList``` holds all the living prey objects in the world at a given timestep.
 
 * ```Animal worldMap[][]``` is a 2D array that stores animal objects, such as a predator or prey. If a predator is at (80, 30) in the simulation screen, their position in the array is at  ```worldMap[30][80]```. This is because the rows and columns of the canvas for the simulation is transposed with the rows and columns of the 2D array. 
+
+* ```DotPanel dp```: canvas simulation and the world is drawn on.
 
 Methods in this class include:
 
@@ -35,7 +39,7 @@ Methods in this class include:
 
 *  ```predScanAround(int i, int j)```: traverses through the worldMap array which holds each of the predator and prey objects based on their x and y location, and calls ```SquaresRight()```, ```SquaresLeft()```, ```SquaresUp()```, and ```SquaresDown()```, each of which checks if there is a prey object 15 squares away from a predator inside the 2D array. For example, if we wanted to check whether there was a pray object 15 squares left  from a predator object whose location in the 2D array is (50, 30), we would first call ```preyScanAround(50, 30)```, which then calls ```SquaresLeft(50, 30, 15, "pred", "prey")```, where "pred" is spectating or seeing if a "prey" is 15 squares to its left. 
 
-* ```preyScanAround(int i, int j)```: similar to ```predScanAround()``` but checks if there is a predator object 10 squares away from a prey after calling each of directional squares methods. If any of the conditions are true, that prey will move in the opposite direaction (there's a possibility it will be stuck at the boundaries of the simulation since it can't run anywhere else).
+* ```preyScanAround(int i, int j)```: similar to ```predScanAround()``` but checks if there is a predator object 10 squares away from a prey after calling each of directional squares methods. If any of the conditions are true, that prey will move in the opposite direaction (there's a possibility it will be stuck at the boundaries of the simulation since it can't run anywhere else). For example, if we wanted the prey to scan for any predators 10 squares above itself at location ```(50, 30)``` in the 2D array,  ```preyScanAround()``` will call  ```SquaresUp(50, 30, 10, "prey", "pred")```.
 
 * ```SquaresDown/Up/Left/Right(int x, int y, int numSquares, String spectator, String observe)``` determines whether there is another animal object, the observe,  ```numSquares``` away from ```worldMap[i][j]``` the spectator. Down/Up/Left/Right is the direction spectator is looking at. 
 
@@ -43,7 +47,9 @@ Methods in this class include:
 
 * ```adjacent(int i, int j, String direction)```: checks that a predator object at position i,j in ```worldMap[][]``` is adjacted to a prey object, either 1 square above, below, left, or right of it. If a prey object is adjacent to it, that prey object's ```getEaten()``` method is called on itself, which removes itself from the  ```preyList``` arraylist. ***Additionally it checks whether the adjacent prey's color is the same color as the canvas background***.
 
-* ```OnClick(int x, int y)```
+* ```OnClickPred(int x, int y)```: a method called from the ```PPSim``` class whenever a user clicks on the canvas/screen. It initializes a new predator, and takes the  ```x``` and ```y``` from wherever the mouse clicks the screen. 
+
+* ```onPressedPrey()```: a method called from the ```PPSim``` class whenever a user presses 'p' on the keyboard, which produces a new prey on the screen. **This is also an additional UI feature of the simulation**.
 
 ***
 
@@ -56,9 +62,11 @@ Important class variables:
 
 * ```int moveDirection``` is the current direction that each animal object is moving towards to. If ```moveDirection``` is ```0```, it is moving up; if ```1```, it is moving down; if ```2```, it is moving left; if ```3```, it is moving right. 
 
-* ```String type```: an animal object has either type ```"pred"``` or ```"prey"``` and this is used so we can traverse ```worldMap[][]``` and check whether ```worldMap[i][j]``` is a predator a prey type animal object. 
+* ```String type```: an animal object has either type ```"pred"``` or ```"prey"``` and this is used so we can traverse ```worldMap[][]``` and check whether ```worldMap[i][j]``` is a predator or a prey type animal object. 
 
 * ```color```: each animal object has a color for which it displays on the canvas. All predators are red, while prey can be any color. 
+
+* ```Boolean chasing```: think of this as an animal's survival mode is "turned on". If a predator sees a prey, it will want to eat that prey, which turns on that predator's survival mode instinct. Likewise, if a prey sees a predator, it would want to run away from it. Whenever either a predator or prey undergoes this experience, it will chase towards or away from the other animal. 
 
 Abstract methods in this class include:
 
@@ -84,9 +92,12 @@ Class variables inherited from ```Animal```:
 
 * ```moveDirection``` is randomly assigned using the ```nextInt(int max)``` function from the ```Helper``` class. 
 
-* ````type```  is always  ```"pred"``` for all predator objects created.
+* ```type```  is always  ```"pred"``` for all predator objects created.
 
-* ```color```  is always  ```Color.RED``` for all predator objects created. 
+* ```color```  is always  ```Color.RED``` for all predator objects 
+created. 
+
+* ```chasing``` is set to false when a predator is initialized. It is only changed to ```true``` when a predator sees a prey 15 squares away from it in any direction (and is turned to ```false``` when there is no prey in sight).
 
 Overriden methods:
 
@@ -112,9 +123,11 @@ Class variables inherited from ```Animal```:
 
 * ```moveDirection``` is randomly assigned using the ```nextInt(int max)``` function from the ```Helper``` class. 
 
-* ````type```  is always  ```"prey"``` for all prey objects created.
+* ```type```  is always  ```"prey"``` for all prey objects created.
 
 * ```color``` is randomly selected for all predator objects created, which is done by using  ```Helper.newRandomColor()```. 
+
+* ```chasing``` is set to false when an individual prey is initialized. It is only changed to ```true``` whenever a prey object sees another predator 10 squares away from it in any direction (and is turned to ```false``` when there is no predator in sight).
 
 Overriden methods:
 
@@ -127,3 +140,7 @@ Overriden methods:
 * ```die()```: First iterate through  ```preyList``` and there is a 1.35% chance a prey dies at each timestep. It's current position in ```worldMap[][]``` is set to ```null``` and the object is removed from ```preyList```. 
 
 * ```drawAnimal(DotPanel dotPanel)```: draws each of the prey in ```preyList``` after iterating through it and drawing the prey on the canvas. It is drawn as a circle and its color is randomly selected through ```Helper.nextRandomColor()```.
+
+Other methods:
+
+* ```getEaten()```: called when a prey is adjacent to another predator object by 1 square (either to its left, right, above, or below it). It is removed from the ```worldMap[][]``` array based on its location within the simulation. It is then removed from ```preyList```.
