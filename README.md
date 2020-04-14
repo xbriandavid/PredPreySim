@@ -144,3 +144,7 @@ Overriden methods:
 Other methods:
 
 * ```getEaten()```: called when a prey is adjacent to another predator object by 1 square (either to its left, right, above, or below it). It is removed from the ```worldMap[][]``` array based on its location within the simulation. It is then removed from ```preyList```.
+
+***
+### Additional features:
+Refer to the ```onPressedPrey()``` method found in the ```World``` class. 
