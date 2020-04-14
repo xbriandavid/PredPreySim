@@ -146,5 +146,25 @@ Other methods:
 * ```getEaten()```: called when a prey is adjacent to another predator object by 1 square (either to its left, right, above, or below it). It is removed from the ```worldMap[][]``` array based on its location within the simulation. It is then removed from ```preyList```.
 
 ***
+
+### PPSim Class
+
+The ```PPSim``` class allows the simulation to be drawn on the canvas, as well as including the UI features of the simulation. For implementing the additional UI functions, we included the methods that were needed to override the methods found from the imported packages. 
+
+For Keyboard events:
+* ```keyTyped()```
+* ```keyPressed()```
+* ```keyReleased()```
+
+For click events:
+* ```mouseClicked()```
+* ```mousePressed()```
+* ```mouseReleased()```
+* ```mouseEntered()```
+* ```mouseExited()```
+* ```mouseDragged()```
+* ```mouseMoved()```
+
+
 ### Additional features:
 Refer to the ```onPressedPrey()``` method found in the ```World``` class. 
