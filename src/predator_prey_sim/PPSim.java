@@ -1,11 +1,13 @@
 package predator_prey_sim;
 
 import util.DotPanel;
+import util.Helper;
 
 import java.awt.Color;
 import java.awt.Container;
 
 import javax.swing.JFrame;
+import java.awt.event.*;
 
 
 /*
@@ -18,7 +20,7 @@ import javax.swing.JFrame;
  * We will add additional rules for dealing with sighting or running into prey later.
  */
 
-public class PPSim extends JFrame {
+public class PPSim extends JFrame implements KeyListener, MouseListener, MouseMotionListener{
 
 	private static final long serialVersionUID = -5176170979783243427L;
 
@@ -31,6 +33,7 @@ public class PPSim extends JFrame {
 	public static final int DOT_SIZE = 6;
 	private static final int NUM_PREY = 10;
 	private static final int NUM_PREDATORS = 5;
+	World ppworld;
 
 
 
@@ -51,7 +54,10 @@ public class PPSim extends JFrame {
 		/* Add the panel to the frame */
 		Container cPane = this.getContentPane();
 		cPane.add(dp);
+		this.addKeyListener(this);
 
+		dp.addMouseListener(this);
+		dp.addMouseMotionListener(this);
 		/* Initialize the DotPanel canvas:
 		 * You CANNOT draw to the panel BEFORE this code is called.
 		 * You CANNOT add new widgets to the frame AFTER this is called.
@@ -63,7 +69,7 @@ public class PPSim extends JFrame {
 		this.setVisible(true);
 
 		/* Create our city */
-		World ppworld = new World(MAX_X, MAX_Y, NUM_PREY, NUM_PREDATORS);
+		ppworld = new World(MAX_X, MAX_Y, NUM_PREY, NUM_PREDATORS);
 
 		/* This is the Run Loop (aka "simulation loop" or "game loop")
 		 * It will loop forever, first updating the state of the world
@@ -80,9 +86,65 @@ public class PPSim extends JFrame {
 			ppworld.update();
 			// Draw to screen and then refresh
 			ppworld.draw(dp);
-			dp.repaintAndSleep(30);
+			dp.repaintAndSleep(80);
 
 		}
+	
+	}
+
+	@Override
+	public void keyTyped(KeyEvent keyEvent) {
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent keyEvent) {
+		System.out.print(keyEvent.getKeyChar());
+		switch(keyEvent.getKeyCode()) {
+			case KeyEvent.VK_ENTER:
+				ppworld = new World(MAX_X, MAX_Y, NUM_PREY, NUM_PREDATORS);
+				break;
+			case KeyEvent.VK_SPACE:
+				ppworld.canavasColor = Helper.newRandColor();
+				break;
+		}
+
+	}
+
+	@Override
+	public void keyReleased(KeyEvent keyEvent) {
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent mouseEvent) {
+		ppworld.OnClick(mouseEvent.getX()/DOT_SIZE, mouseEvent.getY()/DOT_SIZE);
+	}
+
+	@Override
+	public void mousePressed(MouseEvent mouseEvent) {
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent mouseEvent) {
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent mouseEvent) {
+
+	}
+	
+	@Override
+	public void mouseExited(MouseEvent mouseEvent) {
+
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent mouseEvent) {
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent mouseEvent) {
+
 	}
 
 	public static void main(String[] args) {
