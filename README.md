@@ -43,7 +43,7 @@ Methods in this class include:
 
 * ```SquaresDown/Up/Left/Right(int x, int y, int numSquares, String spectator, String observe)``` determines whether there is another animal object, the observe,  ```numSquares``` away from ```worldMap[i][j]``` the spectator. Down/Up/Left/Right is the direction spectator is looking at. 
 
-* ```eat(int i, int j)```: checks that an animial object in ```worldMap[][]``` is a predator and calls ```adjacent(int i, int j, String direction)``` to check if a prey object is located 1 square to its right, left, above, or below it within the 2D array. Before ```adjacent``` is called, there are multiple conditions that check where a predator is located within the simulation. For example, at the top most left corner, a predator may only check 1 square right or below of it. If any of these conditions are true, that particular prey is removed from the simulation, which is done by calling ```getEaten()``` from the prey class. 
+* ```predsEat(int i, int j)```: checks that an animial object in ```worldMap[][]``` is a predator and calls ```adjacent(int i, int j, String direction)``` to check if a prey object is located 1 square to its right, left, above, or below it within the 2D array. Before ```adjacent``` is called, there are multiple conditions that check where a predator is located within the simulation. For example, at the top most left corner, a predator may only check 1 square right or below of it. If any of these conditions are true, that particular prey is removed from the simulation, which is done by calling ```getEaten()``` from the prey class. 
 
 * ```adjacent(int i, int j, String direction)```: checks that a predator object at position i,j in ```worldMap[][]``` is adjacted to a prey object, either 1 square above, below, left, or right of it. If a prey object is adjacent to it, that prey object's ```getEaten()``` method is called on itself, which removes itself from the  ```preyList``` arraylist. ***Additionally it checks whether the adjacent prey's color is the same color as the canvas background***.
 
@@ -168,3 +168,7 @@ For click events:
 
 ### Additional features:
 Refer to the ```onPressedPrey()``` method found in the ```World``` class. 
+
+Additionally, Prey can die naturally, just like predators
+
+Also modified: a prey has a 3% chance of reproducing. 
