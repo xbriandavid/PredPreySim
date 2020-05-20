@@ -4,8 +4,6 @@
  - bdavid1@gwu.edu
  - xbriandavid
 
-## Project Write-Up
-
 ### Classes:
 ***
 #### World Class
