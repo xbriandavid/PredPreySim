@@ -1,9 +1,4 @@
 # Predator Prey Simulation
-
-**Brian David** 
- - bdavid1@gwu.edu
- - xbriandavid
-
 ### Classes:
 ***
 #### World Class
