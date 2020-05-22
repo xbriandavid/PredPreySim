@@ -1,4 +1,5 @@
 # Predator Prey Simulation
+![](./sim.gif)
 ### Classes:
 ***
 #### World Class
